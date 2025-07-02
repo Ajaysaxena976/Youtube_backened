@@ -4,7 +4,7 @@ import {User} from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 
-const registerUser = asyncHandler(async(requestAnimationFrame, res)=>{
+const registerUser = asyncHandler(async(req, res)=>{
     //kya ky steps honge
 
     //get user details form frontened 
@@ -19,7 +19,7 @@ const registerUser = asyncHandler(async(requestAnimationFrame, res)=>{
     
     
     
-const {fullName, email, username, password} = request.body
+const {fullName, email, username, password} = req.body;
 console.log("email:", email);
 
 /* ye simple tarika hai validate krne ka iske niche advance tarika hai ese bhi check kr skte hai 
@@ -39,7 +39,7 @@ if(fullName===""){
 
 
 //validation for checking that if user already exist or not
-const existedUser = User.findOne({
+const existedUser = await User.findOne({
     $or: [{ username },{ email }]
 })
 
@@ -49,8 +49,14 @@ if(existedUser){
 }
 
 // handling image 
+
 const avatarLocalPath = req.files?.avatar[0]?.path;
-const coverImageLocalPath = req.files?.coverImage[0]?.path;
+//const coverImageLocalPath = req.files?.coverImage[0]?.path;
+let coverImageLocalPath;
+if(req.files && Array.isArray(req.files.coverImage) && 
+req.files.coverImage.length>0){
+    coverImageLocalPath = req.files.coverImage[0].path
+}
 
 //if avatar is not uploaded by user 
 if(!avatarLocalPath){
@@ -60,6 +66,7 @@ if(!avatarLocalPath){
 // uploading image to cloudinary 
 const avatar = await uploadOnCloudinary(avatarLocalPath)
 const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+console.log("hi")
 
 if(!avatar){
     throw new ApiError(400, "Avatar file is required")
