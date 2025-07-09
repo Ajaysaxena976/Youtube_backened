@@ -15,7 +15,6 @@ console.log(process.env.CLOUDINARY_CLOUD_NAME)
         try{
             if(!localFilePath) return null
             //upload the file on cloudinary
-            console.log("upload on cloud",localFilePath)
             const response = await cloudinary.uploader.upload(localFilePath,{
                 resourse_type:"auto"
             })

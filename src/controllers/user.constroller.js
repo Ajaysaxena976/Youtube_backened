@@ -82,7 +82,8 @@ if(existedUser){
 
 const avatarLocalPath = req.files?.avatar[0]?.path;
 //const coverImageLocalPath = req.files?.coverImage[0]?.path;
-let coverImageLocalPath;
+let coverImageLocalPath 
+
 if(req.files && Array.isArray(req.files.coverImage) && 
 req.files.coverImage.length>0){
     coverImageLocalPath = req.files.coverImage[0].path
@@ -113,7 +114,7 @@ const user = await User.create({
     username: username.toLowerCase()
 })
 
-//checking is user created or not  and with .select method we removed password 
+//checking is user created or not  and with .select method we removed password and refreshToken field
 const  createdUser = await User.findById(user._id).select(
 "-password -refreshToken"
 )
@@ -220,7 +221,7 @@ const logoutUser = asyncHandler(async(req,res)=>{
 //refreshing the access token 
 const refreshAccessToken = asyncHandler( async(req, res) =>{
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken 
-    if(incomingRefreshToken){
+    if(!incomingRefreshToken){
         throw new ApiError(401, "Unauthorized access")
     }
   try {
